@@ -1,0 +1,14 @@
+FROM node:20-bullseye AS dev
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+WORKDIR /usr/src/app
+COPY . .
+
+RUN npm init -y
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+EXPOSE 3001
+
+CMD ["pnpm", "start:dev"]

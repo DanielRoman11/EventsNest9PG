@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  events_db:
+    image: postgres
+    container_name: events_db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: daker
+      POSTGRES_DB: eventos
+
+  events_api:
+    image: nestjs-docker
+    container_name: events_api
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - JWT_SECRET=ThisIsMySecret
+      - NODE_ENV=dev
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+    volumes:
+      - ./src:/usr/src/app/src
+    depends_on:
+      - events_db
