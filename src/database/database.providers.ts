@@ -1,4 +1,3 @@
-import { Event } from '../event/event.entity';
 import { DataSource } from 'typeorm';
 import constants from 'src/constants';
 export const databaseProviders = [
@@ -13,11 +12,11 @@ export const databaseProviders = [
           username: process.env.DB_USER,
           password: process.env.DB_PASS,
           database: process.env.DB_NAME,
-          entities: [Event],
+          entities: [__dirname + '/../**/*.entity{.ts,.js}'],
           synchronize: true,
         });
-  
-        return await dataSource.initialize()
+
+        return await dataSource.initialize();
       } catch (error) {
         console.error('Database Connection Fails! ', error.message);
         throw error;
