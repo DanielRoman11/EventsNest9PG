@@ -20,15 +20,8 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "3001:3001"
-    environment:
-      - PORT=3001
-      - JWT_SECRET=ThisIsMySecret
-      - NODE_ENV=dev
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - DB_NAME=${DB_NAME}
+    env_file:
+      - .env
     volumes:
       - ./src:/usr/src/app/src
     depends_on:
