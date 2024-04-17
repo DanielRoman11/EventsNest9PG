@@ -1,4 +1,8 @@
-import { IsNumberString, Length, IsDateString, IsNotEmpty } from 'class-validator';
+import {
+  Length,
+  IsDateString,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class CreateEventDto {
   @Length(4, 20)
