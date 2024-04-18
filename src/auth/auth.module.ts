@@ -7,7 +7,6 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
 import constants from 'src/constants';
 
-
 @Module({
   imports: [
     forwardRef(() => UserModule),
@@ -23,4 +22,3 @@ import constants from 'src/constants';
   exports: [AuthService],
 })
 export class AuthModule {}
-
