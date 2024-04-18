@@ -1,7 +1,7 @@
 import { SelectQueryBuilder } from 'typeorm';
 
 export interface PaginationOptions {
-  currentPage: number;
+  page: number;
   limit: number;
   total?: boolean;
 }
@@ -22,11 +22,11 @@ export class PaginationResults<T> {
 export async function paginate<T>(
   selectQb: SelectQueryBuilder<T>,
   options: PaginationOptions = {
-    currentPage: 1,
+    page: 1,
     limit: 10,
   },
 ): Promise<PaginationResults<T>> {
-  const offset = (options.currentPage - 1) * options.limit;
+  const offset = (options.page - 1) * options.limit;
   const data = await selectQb.limit(options.limit).offset(offset).getMany();
 
   return {

@@ -12,7 +12,6 @@ import {
   HttpCode,
   Query,
   Logger,
-  UsePipes,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { Event } from './event.entity';
@@ -21,8 +20,6 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import constants from '../constants';
 import { DeleteResult, Repository } from 'typeorm';
 import { PaginationResults } from '../paginator/paginator';
-import { ListEvents } from './input/listEvents';
-import { ListEventPipe } from './input/listEvent.pipe';
 
 @Controller('event')
 export class EventController {
@@ -34,17 +31,15 @@ export class EventController {
   ) {}
 
   @Get()
-  @UsePipes(ListEventPipe)
   findAllEvents(
-    @Query('filter') filter: ListEvents,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('total') total: boolean = false,
   ): Promise<PaginationResults<Event>> {
-    this.logger.debug(
-      'Pagination Options: ' + JSON.stringify(filter, undefined, 4),
-    );
     return this.eventService.findEventsPaginated({
-      ...filter,
-      currentPage: filter.page,
-      total: filter.total,
+      page: Number(page),
+      limit: Number(limit),
+      total: total && Boolean(total),
     });
   }
 

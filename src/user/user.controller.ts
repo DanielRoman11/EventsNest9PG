@@ -6,12 +6,9 @@ import {
   Post,
   Query,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ListUsers } from './input/list.user';
-import { ListUserPipe } from './input/listUser.pipe';
 
 @Controller('user')
 export class UserController {
@@ -24,14 +21,16 @@ export class UserController {
   }
 
   @Get()
-  @UsePipes(ListUserPipe)
   @UseInterceptors(ClassSerializerInterceptor)
   async findAllUsers(
-    @Query('filter') filter: ListUsers
-  ){
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('total') total: boolean = false,
+  ) {
     return this.userService.findAllUsersPaginated({
-      ...filter,
-      currentPage: filter.page
+      page,
+      limit,
+      total,
     });
   }
 }

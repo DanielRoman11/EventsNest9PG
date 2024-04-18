@@ -55,6 +55,6 @@ export class UserService {
   }
 
   public async findAllUsersPaginated(options: PaginationOptions) {
-    return paginate(this.userBaseQuery(), options);
+    return paginate(this.userBaseQuery(), {...options});
   }
 }
