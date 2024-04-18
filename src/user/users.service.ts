@@ -3,8 +3,9 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { DeleteResult, Repository, SelectQueryBuilder } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from 'src/auth/auth.service';
@@ -25,7 +26,7 @@ export class UserService {
     return this.userRepo.createQueryBuilder('e').orderBy('e.id');
   }
 
-  public async create(input: CreateUserDto) {
+  public async signUp(input: CreateUserDto) {
     if (input.password !== input.repassword)
       throw new BadRequestException('Password must be identical');
 
@@ -55,6 +56,12 @@ export class UserService {
   }
 
   public async findAllUsersPaginated(options: PaginationOptions) {
-    return paginate(this.userBaseQuery(), {...options});
+    return paginate(this.userBaseQuery(), { ...options });
+  }
+
+  public async deleteUser(id: string): Promise<DeleteResult> {
+    const user = await this.findOneUserFromId(id);
+    if (!user) throw new NotFoundException('User Not Found');
+    return this.userRepo.delete(id);
   }
 }

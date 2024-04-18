@@ -1,7 +1,7 @@
-import { Injectable, Inject } from '@nestjs/common';
+import constants from '../constants';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Event } from './event.entity';
-import constants from '../constants';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import {
@@ -29,18 +29,18 @@ export class EventService {
     return paginate(this.eventBaseQuery(), { ...options });
   }
 
-  public findOne(id: number): Promise<Event> {
+  public findOneEvent(id: number): Promise<Event> {
     return this.eventRepository.findOneBy({ id: id });
   }
 
-  public create(event: CreateEventDto): Promise<Event> {
+  public createEvent(event: CreateEventDto): Promise<Event> {
     return this.eventRepository.save({
       ...event,
       when: new Date(event.when),
     });
   }
 
-  public update(event: Event, eventInput: UpdateEventDto): Promise<Event> {
+  public updateEvent(event: Event, eventInput: UpdateEventDto): Promise<Event> {
     return this.eventRepository.save({
       ...event,
       ...eventInput,
@@ -48,7 +48,11 @@ export class EventService {
     });
   }
 
-  public delete(event: Event) {
-    return this.eventRepository.delete(event.id);
+  public async deleteEvent(id: number) {
+    const event = await this.eventRepository.findOneBy({
+      id: id,
+    });
+    if (!event) throw new NotFoundException('Event Not Found');
+    return this.eventRepository.delete(id);
   }
 }

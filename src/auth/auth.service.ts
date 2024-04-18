@@ -2,13 +2,13 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '../user/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/user.entity';
-import { IsJWT } from 'class-validator';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +24,7 @@ export class AuthService {
 
   public async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.usersService.findOneUserFromEmail(email);
-    if (await bcrypt.compare(user.password, pass)) {
+    if (await bcrypt.compare(pass, user.password)) {
       const { password, ...result } = user;
       return result;
     }
@@ -36,16 +36,16 @@ export class AuthService {
     pass: string,
   ): Promise<{ access_token: string }> {
     const user = await this.usersService.findOneUserFromEmail(email);
+    if (!user) throw new NotFoundException('User Not Found');
     if (await bcrypt.compare(pass, user.password)) {
       return {
         access_token: await this.jwtService.signAsync({ sub: user.id }),
       };
     }
-    throw new UnauthorizedException();
+    throw new UnauthorizedException('Incorrect Password');
   }
 
   public async findUserFromToken(payload: string) {
-    console.log(payload);
-    return this.usersService.findOneUserFromId(payload)
+    return this.usersService.findOneUserFromId(payload);
   }
 }
