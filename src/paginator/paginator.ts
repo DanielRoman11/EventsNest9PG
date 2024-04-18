@@ -13,28 +13,28 @@ export class PaginationResults<T> {
 
   first: number;
   last: number;
-  total: number;
   limit: number;
+  total: number;
   totalPages: number;
   data: T[];
 }
 
 export async function paginate<T>(
-  select: SelectQueryBuilder<T>,
+  selectQb: SelectQueryBuilder<T>,
   options: PaginationOptions = {
     currentPage: 1,
     limit: 10,
   },
 ): Promise<PaginationResults<T>> {
-  const offset: number = (options.currentPage - 1) * options.limit;
-  const data = await select.limit(options.limit).offset(offset).getMany();
+  const offset = (options.currentPage - 1) * options.limit;
+  const data = await selectQb.limit(options.limit).offset(offset).getMany();
 
-  return new PaginationResults({
+  return {
     first: offset + 1,
     last: offset + data.length,
     limit: options.limit,
-    totalPages: Math.ceil((await select.getCount()) / options.limit),
-    total: options.total && (await select.getCount()),
-    data,
-  });
+    total: options.total && await selectQb.getCount(),
+    totalPages: Math.ceil(await selectQb.getCount() / options.limit),
+    data
+  };
 }
