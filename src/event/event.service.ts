@@ -1,5 +1,11 @@
 import constants from '../constants';
-import { Injectable, Inject, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  UnauthorizedException,
+  Logger,
+} from '@nestjs/common';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Event } from './event.entity';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -10,25 +16,41 @@ import {
   paginate,
 } from '../paginator/paginator';
 import { AuthService } from 'src/auth/auth.service';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class EventService {
+  private readonly logger: Logger = new Logger(EventService.name);
   constructor(
     @Inject(constants.eventRepo)
     private readonly eventRepository: Repository<Event>,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
-  //? PRIVATE METHODS
   private eventBaseQuery(): SelectQueryBuilder<Event> {
     return this.eventRepository.createQueryBuilder('e').orderBy('e.id');
   }
 
-  //? PUBLIC METHODS
+  public async findMyEventsPaginated(
+    options: PaginationOptions,
+    payload: string,
+  ): Promise<PaginationResults<Event>> {
+    const user = await this.authService.findUserFromToken(payload);
+    const query = this.eventBaseQuery().where('e.userId = :userId', {
+      userId: user.id,
+    });
+    this.logger.debug(query.getQuery());
+    return paginate(query, { ...options });
+  }
+
   public async findEventsPaginated(
     options: PaginationOptions,
   ): Promise<PaginationResults<Event>> {
-    return paginate(this.eventBaseQuery(), { ...options });
+    const query = this.eventBaseQuery().leftJoinAndSelect(
+      'e.user', 'user'
+    );
+    this.logger.debug(query.getQuery());
+    return paginate(query, { ...options });
   }
 
   public findOneEvent(id: number): Promise<Event> {
@@ -36,13 +58,13 @@ export class EventService {
   }
 
   public async createEvent(event: CreateEventDto, id: string): Promise<Event> {
-    const user = await this.authService.findUserFromToken(id)
-    if(!user) throw new UnauthorizedException('Not Authenticated')
-    
+    const user = await this.authService.findUserFromToken(id);
+    if (!user) throw new UnauthorizedException('Not Authenticated');
+
     return this.eventRepository.save({
       ...event,
       when: new Date(event.when),
-      user: user
+      user: user,
     });
   }
 

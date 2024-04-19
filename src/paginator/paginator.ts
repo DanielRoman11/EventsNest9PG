@@ -27,7 +27,7 @@ export async function paginate<T>(
   },
 ): Promise<PaginationResults<T>> {
   const offset = (options.page - 1) * options.limit;
-  const data = await selectQb.limit(options.limit).offset(offset).getMany();
+  const data = await selectQb.limit(options.limit).skip(offset).getMany();
 
   return {
     first: offset + 1,

@@ -1,6 +1,12 @@
 import { Exclude } from 'class-transformer';
 import { Event } from 'src/event/event.entity';
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -22,9 +28,10 @@ export class User {
   password: string;
 
   @OneToMany(() => Event, (event) => event.user, {
-    cascade: true,
-    onDelete: 'CASCADE'
+    // cascade: true,
+    // onDelete: 'CASCADE',
+    // eager: true
   })
   @JoinColumn()
-  events: Event[]
+  events: Event[];
 }

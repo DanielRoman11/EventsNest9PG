@@ -18,6 +18,8 @@ export class Event {
   @Column()
   address: string;
   
-  @ManyToOne(() => User, (user) => user.events)
+  @ManyToOne(() => User, (user) => user.events, {
+    // eager: true
+  })
   user: User
 }

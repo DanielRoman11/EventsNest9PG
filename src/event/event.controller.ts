@@ -12,9 +12,9 @@ import {
   HttpCode,
   Query,
   UseGuards,
-  Request,
   UseInterceptors,
   ClassSerializerInterceptor,
+  Request,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { Event } from './event.entity';
@@ -24,17 +24,17 @@ import constants from '../constants';
 import { Repository } from 'typeorm';
 import { PaginationResults } from '../paginator/paginator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { AuthService } from 'src/auth/auth.service';
 
 @Controller('event')
 export class EventController {
   constructor(
     @Inject(constants.eventRepo)
-    private eventRepository: Repository<Event>,
+    private readonly eventRepository: Repository<Event>,
     private readonly eventService: EventService,
   ) {}
 
   @Get()
+  @UseInterceptors(ClassSerializerInterceptor)
   findAllEvents(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
@@ -45,6 +45,26 @@ export class EventController {
       limit: Number(limit),
       total,
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async findAllMyEvents(
+    @Request() req: { payload: string },
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('total') total: boolean = false,
+  ): Promise<PaginationResults<Event>> {
+    console.log(req.payload);
+
+    return await this.eventService.findMyEventsPaginated(
+      {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+      },
+      req.payload,
+    );
   }
 
   @Get(':id')
@@ -62,6 +82,7 @@ export class EventController {
     @Body() input: CreateEventDto,
     @Request() req: { userId: string },
   ): Promise<Event> {
+    console.log(req.userId);
     return await this.eventService.createEvent(input, req.userId);
   }
 
