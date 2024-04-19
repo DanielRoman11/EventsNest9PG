@@ -13,6 +13,8 @@ import {
   Query,
   UseGuards,
   Request,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { Event } from './event.entity';
@@ -21,15 +23,15 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import constants from '../constants';
 import { Repository } from 'typeorm';
 import { PaginationResults } from '../paginator/paginator';
-import { AuthGuard } from '@nestjs/passport';
-import { Public } from 'src/auth/auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('event')
 export class EventController {
   constructor(
-    private readonly eventService: EventService,
     @Inject(constants.eventRepo)
     private eventRepository: Repository<Event>,
+    private readonly eventService: EventService,
   ) {}
 
   @Get()
@@ -53,10 +55,14 @@ export class EventController {
     return event;
   }
 
-  @Public()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
-  async createEvent(@Body() input: CreateEventDto): Promise<Event> {
-    return await this.eventService.createEvent(input);
+  async createEvent(
+    @Body() input: CreateEventDto,
+    @Request() req: { userId: string },
+  ): Promise<Event> {
+    return await this.eventService.createEvent(input, req.userId);
   }
 
   @Patch(':id')

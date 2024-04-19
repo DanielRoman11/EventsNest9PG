@@ -10,24 +10,25 @@ import {
   ParseUUIDPipe,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Public } from 'src/auth/auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+// import { Public } from 'src/auth/auth.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Public()
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   async signUp(@Body() input: CreateUserDto) {
     return await this.userService.signUp(input);
   }
 
-  @Public()
+  @UseGuards(JwtAuthGuard)
   @Get()
   @UseInterceptors(ClassSerializerInterceptor)
   async findAllUsers(
@@ -42,7 +43,7 @@ export class UserController {
     });
   }
 
-  @Public()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Delete(':id')
   async deleteUser(@Param('id', ParseUUIDPipe) id: string) {

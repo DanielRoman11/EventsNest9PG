@@ -8,7 +8,7 @@ import { AuthModule } from 'src/auth/auth.module';
 @Module({
   imports: [DatabaseModule, forwardRef(() => AuthModule)],
   providers: [...userProviders, UserService],
-  controllers: [UserController],
   exports: [UserService],
+  controllers: [UserController],
 })
 export class UserModule {}
