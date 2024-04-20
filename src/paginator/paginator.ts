@@ -29,8 +29,8 @@ export async function paginate<T>(
   console.log(options.page, options.limit);
   console.log(options.total);
   const offset = (options.page - 1) * options.limit;
-  const total = options.total ? await selectQb.getCount() : null;
-  const totalPages = total ? Math.ceil(total / options.limit) : null;
+  const total = options.total && (await selectQb.getCount());
+  const totalPages = total && Math.ceil(total / options.limit);
   const data = await selectQb.offset(offset).limit(options.limit).getMany();
 
   return {
