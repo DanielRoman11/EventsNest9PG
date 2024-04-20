@@ -26,15 +26,19 @@ export async function paginate<T>(
     limit: 10,
   },
 ): Promise<PaginationResults<T>> {
+  console.log(options.page, options.limit);
+  console.log(options.total);
   const offset = (options.page - 1) * options.limit;
-  const data = await selectQb.limit(options.limit).skip(offset).getMany();
+  const total = options.total ? await selectQb.getCount() : null;
+  const totalPages = total ? Math.ceil(total / options.limit) : null;
+  const data = await selectQb.offset(offset).limit(options.limit).getMany();
 
   return {
     first: offset + 1,
     last: offset + data.length,
-    limit: options.limit,
-    total: options.total && await selectQb.getCount(),
-    totalPages: Math.ceil(await selectQb.getCount() / options.limit),
-    data
+    limit: Number(options.limit),
+    total,
+    totalPages,
+    data,
   };
 }

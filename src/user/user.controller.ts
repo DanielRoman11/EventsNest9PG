@@ -10,6 +10,7 @@ import {
   ParseUUIDPipe,
   Post,
   Query,
+  SerializeOptions,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 // import { Public } from 'src/auth/auth.guard';
 
 @Controller('user')
+@SerializeOptions({strategy: 'exposeAll'})
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -28,7 +30,6 @@ export class UserController {
     return await this.userService.signUp(input);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   @UseInterceptors(ClassSerializerInterceptor)
   async findAllUsers(
