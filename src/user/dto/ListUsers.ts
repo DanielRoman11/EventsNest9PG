@@ -1,4 +1,3 @@
 import { ListEntityQuery } from "src/helpers/ListEntityQuery";
 
-export class ListEvents extends ListEntityQuery {}
-  
+export class ListUsers extends ListEntityQuery {}
