@@ -33,6 +33,5 @@ export class User {
   @JoinColumn()
   events: Event[];
 
-  @Expose()
-  eventos?: number;
+  eventCount?: number;
 }

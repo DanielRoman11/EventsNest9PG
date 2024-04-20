@@ -59,10 +59,7 @@ export class UserService {
 
   public async findAllUsersPaginated(options: PaginationOptions) {
     const query = this.userBaseQuery()
-    .select(['u.id', 'u.username', 'u.email'])
-    .addSelect('COUNT(event.id)', 'eventos')
-    .leftJoinAndSelect('u.events', 'event')
-    .groupBy('u.id, u.username, u.email, event.id');
+    .loadRelationCountAndMap('u.eventCount', 'u.events')
 
     this.logger.debug(query.getQuery());
     return paginate(query, options);
