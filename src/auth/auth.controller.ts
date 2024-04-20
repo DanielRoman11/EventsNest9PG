@@ -26,7 +26,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('profile')
-  async getProfile(@Request() req: { userId: string }) {
-    return this.authService.findUserFromToken(req.userId);
+  async getProfile(@Request() req: { user: string }) {
+    return this.authService.findUserFromToken(req.user);
   }
 }

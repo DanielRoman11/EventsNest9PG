@@ -46,7 +46,7 @@ export class AuthService {
     throw new UnauthorizedException('Incorrect Password');
   }
 
-  public async findUserFromToken(payload: string) {
-    return this.usersService.findOneUserFromId(payload);
+  public async findUserFromToken(userId: string) {
+    return this.usersService.findOneUserFromId(userId);
   }
 }
