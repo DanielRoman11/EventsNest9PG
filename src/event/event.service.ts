@@ -33,39 +33,37 @@ export class EventService {
 
   public async findMyEventsPaginated(
     options: PaginationOptions,
-    payload: string,
+    userId: string,
   ): Promise<PaginationResults<Event>> {
-    const user = await this.authService.findUserFromToken(payload);
     const query = this.eventBaseQuery().where('e.userId = :userId', {
-      userId: user.id,
+      userId,
     });
     this.logger.debug(query.getQuery());
-    return paginate(query, { ...options });
+    return paginate(query, options);
   }
 
   public async findEventsPaginated(
     options: PaginationOptions,
   ): Promise<PaginationResults<Event>> {
-    const query = this.eventBaseQuery().leftJoinAndSelect(
-      'e.user', 'user'
-    );
+    const query = this.eventBaseQuery().leftJoinAndSelect('e.user', 'user');
     this.logger.debug(query.getQuery());
-    return paginate(query, { ...options });
+    return paginate(query, options);
   }
 
   public findOneEvent(id: number): Promise<Event> {
     return this.eventRepository.findOneBy({ id: id });
   }
 
-  public async createEvent(event: CreateEventDto, id: string): Promise<Event> {
-    const user = await this.authService.findUserFromToken(id);
-    if (!user) throw new UnauthorizedException('Not Authenticated');
+  public async createEvent(event: CreateEventDto, userId: string): Promise<Event> {
+    const user = await this.authService.findUserFromToken(userId);
+    if (user)
+      return this.eventRepository.save({
+        ...event,
+        when: new Date(event.when),
+        user: user,
+      });
 
-    return this.eventRepository.save({
-      ...event,
-      when: new Date(event.when),
-      user: user,
-    });
+    throw new UnauthorizedException('Not Authenticated');
   }
 
   public updateEvent(event: Event, eventInput: UpdateEventDto): Promise<Event> {

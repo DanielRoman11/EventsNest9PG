@@ -15,6 +15,8 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Request,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { Event } from './event.entity';
@@ -24,6 +26,7 @@ import constants from '../constants';
 import { Repository } from 'typeorm';
 import { PaginationResults } from '../paginator/paginator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ListEvents } from './dto/listEvents';
 
 @Controller('event')
 export class EventController {
@@ -34,36 +37,32 @@ export class EventController {
   ) {}
 
   @Get()
+  @UsePipes(new ValidationPipe({ transform: true }))
   @UseInterceptors(ClassSerializerInterceptor)
   findAllEvents(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-    @Query('total') total: boolean = false,
+    @Query() filter: ListEvents,
   ): Promise<PaginationResults<Event>> {
     return this.eventService.findEventsPaginated({
-      page: Number(page),
-      limit: Number(limit),
-      total,
+      page: filter.page,
+      limit: filter.limit,
+      total: filter.total,
     });
   }
 
   @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Get('profile')
   async findAllMyEvents(
-    @Request() req: { payload: string },
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-    @Query('total') total: boolean = false,
+    @Query() filter: ListEvents,
+    @Request() req: { user: string },
   ): Promise<PaginationResults<Event>> {
-    console.log(req.payload);
-
     return await this.eventService.findMyEventsPaginated(
       {
-        page: Number(page),
-        limit: Number(limit),
-        total,
+        page: filter.page,
+        limit: filter.limit,
+        total: filter.total,
       },
-      req.payload,
+      req.user,
     );
   }
 
@@ -80,10 +79,9 @@ export class EventController {
   @Post()
   async createEvent(
     @Body() input: CreateEventDto,
-    @Request() req: { userId: string },
+    @Request() req: { user: { userId: string } },
   ): Promise<Event> {
-    console.log(req.userId);
-    return await this.eventService.createEvent(input, req.userId);
+    return await this.eventService.createEvent(input, req.user.userId);
   }
 
   @Patch(':id')
