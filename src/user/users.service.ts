@@ -3,6 +3,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { DeleteResult, Repository, SelectQueryBuilder } from 'typeorm';
@@ -15,6 +16,7 @@ import { paginate, PaginationOptions } from 'src/paginator/paginator';
 
 @Injectable()
 export class UserService {
+  private readonly logger: Logger = new Logger(UserService.name);
   constructor(
     @Inject(constants.userRepo)
     private readonly userRepo: Repository<User>,
@@ -23,7 +25,7 @@ export class UserService {
   ) {}
 
   private userBaseQuery(): SelectQueryBuilder<User> {
-    return this.userRepo.createQueryBuilder('e').orderBy('e.id');
+    return this.userRepo.createQueryBuilder('u').orderBy('u.id');
   }
 
   public async signUp(input: CreateUserDto) {
@@ -52,11 +54,18 @@ export class UserService {
   }
 
   public async findOneUserFromId(id: string): Promise<User> {
-    return this.userRepo.findOneBy({ id });
+    return await this.userRepo.findOneBy({ id });
   }
 
   public async findAllUsersPaginated(options: PaginationOptions) {
-    return paginate(this.userBaseQuery(), { ...options });
+    const query = this.userBaseQuery()
+    .select(['u.id', 'u.username', 'u.email'])
+    .addSelect('COUNT(event.id)', 'eventos')
+    .leftJoinAndSelect('u.events', 'event')
+    .groupBy('u.id, u.username, u.email, event.id');
+
+    this.logger.debug(query.getQuery());
+    return paginate(query, options);
   }
 
   public async deleteUser(id: string): Promise<DeleteResult> {

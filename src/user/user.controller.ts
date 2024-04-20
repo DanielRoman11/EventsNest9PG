@@ -13,14 +13,17 @@ import {
   SerializeOptions,
   UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ListUsers } from './dto/ListUsers';
 // import { Public } from 'src/auth/auth.guard';
 
 @Controller('user')
-@SerializeOptions({strategy: 'exposeAll'})
+@SerializeOptions({ strategy: 'exposeAll' })
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -31,16 +34,13 @@ export class UserController {
   }
 
   @Get()
+  @UsePipes(new ValidationPipe({ transform: true }))
   @UseInterceptors(ClassSerializerInterceptor)
-  async findAllUsers(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-    @Query('total') total: boolean = false,
-  ) {
+  async findAllUsers(@Query() filter: ListUsers) {
     return await this.userService.findAllUsersPaginated({
-      page: Number(page),
-      limit: Number(limit),
-      total,
+      page: filter.page,
+      limit: filter.limit,
+      total: filter.total,
     });
   }
 

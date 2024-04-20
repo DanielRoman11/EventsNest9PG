@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { Event } from 'src/event/event.entity';
 import {
   Column,
@@ -28,10 +28,11 @@ export class User {
   password: string;
 
   @OneToMany(() => Event, (event) => event.user, {
-    // cascade: true,
-    // onDelete: 'CASCADE',
-    // eager: true
+    cascade: true,
   })
   @JoinColumn()
   events: Event[];
+
+  @Expose()
+  eventos?: number;
 }
