@@ -14,8 +14,8 @@ import { User } from '../../src/user/entities/user.entity';
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(forwardRef(() => UserService))
     private usersService: UserService,
-    @Inject(forwardRef(() => JwtService))
     private jwtService: JwtService,
   ) {}
 
@@ -47,7 +47,7 @@ export class AuthService {
     throw new UnauthorizedException('Incorrect Password');
   }
 
-  public async findUserFromToken(userId: string) {
+  public async findUserFromToken(userId: Pick<User, 'id'>) {
     return this.usersService.findOneUserFromId(userId);
   }
 }
