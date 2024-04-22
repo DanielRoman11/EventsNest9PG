@@ -1,5 +1,6 @@
+import constants from '../shared/constants';
 import { DataSource } from 'typeorm';
-import constants from 'src/constants';
+
 export const databaseProviders = [
   {
     provide: constants.dataSource,

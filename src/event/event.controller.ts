@@ -19,14 +19,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { EventService } from './event.service';
-import { Event } from './event.entity';
+import { Event } from './entities/event.entity';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import constants from '../constants';
+import constants from '../shared/constants';
 import { Repository } from 'typeorm';
 import { PaginationResults } from '../paginator/paginator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ListEvents } from './dto/listEvents';
+import { ListEvents } from './constants/event.constants';
 
 @Controller('event')
 export class EventController {

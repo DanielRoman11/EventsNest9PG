@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
-import { Event } from './event.entity';
-import constants from '../constants';
+import { Event } from './entities/event.entity';
+import constants from '../shared/constants';
 
 export const eventProviders = [
   {

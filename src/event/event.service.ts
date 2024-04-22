@@ -1,4 +1,3 @@
-import constants from '../constants';
 import {
   Injectable,
   Inject,
@@ -7,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { Event } from './event.entity';
+import { Event } from './entities/event.entity';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import {
@@ -16,7 +15,7 @@ import {
   paginate,
 } from '../paginator/paginator';
 import { AuthService } from 'src/auth/auth.service';
-import { User } from 'src/user/user.entity';
+import constants from '../shared/constants';
 
 @Injectable()
 export class EventService {

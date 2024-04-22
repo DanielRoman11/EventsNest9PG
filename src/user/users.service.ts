@@ -7,12 +7,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DeleteResult, Repository, SelectQueryBuilder } from 'typeorm';
-import { User } from './user.entity';
+import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from 'src/auth/auth.service';
-import constants from 'src/constants';
 import * as bcrypt from 'bcrypt';
 import { paginate, PaginationOptions } from 'src/paginator/paginator';
+import constants from '../shared/constants';
 
 @Injectable()
 export class UserService {
@@ -58,8 +58,10 @@ export class UserService {
   }
 
   public async findAllUsersPaginated(options: PaginationOptions) {
-    const query = this.userBaseQuery()
-    .loadRelationCountAndMap('u.eventCount', 'u.events')
+    const query = this.userBaseQuery().loadRelationCountAndMap(
+      'u.eventCount',
+      'u.events',
+    );
 
     this.logger.debug(query.getQuery());
     return paginate(query, options);
