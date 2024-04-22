@@ -53,8 +53,8 @@ export class UserService {
     return this.userRepo.findOneBy({ email });
   }
 
-  public async findOneUserFromId(id: string): Promise<User> {
-    return await this.userRepo.findOneBy({ id });
+  public async findOneUserFromId(userId: Pick<User, 'id'>) {
+    return await this.userRepo.createQueryBuilder('u').where({ id: userId }).getOne();
   }
 
   public async findAllUsersPaginated(options: PaginationOptions) {
@@ -67,7 +67,7 @@ export class UserService {
     return paginate(query, options);
   }
 
-  public async deleteUser(id: string): Promise<DeleteResult> {
+  public async deleteUser(id: Pick<User, 'id'>): Promise<DeleteResult> {
     const user = await this.findOneUserFromId(id);
     if (!user) throw new NotFoundException('User Not Found');
     return this.userRepo.delete(id);
