@@ -1,4 +1,4 @@
-import { Length, IsDateString, IsNotEmpty } from 'class-validator';
+import { Length, IsDateString, IsNotEmpty, IsBoolean } from 'class-validator';
 
 export class CreateEventDto {
   @Length(4, 20)
@@ -13,4 +13,7 @@ export class CreateEventDto {
   @IsNotEmpty()
   @Length(4, 30)
   address: string;
+
+  @IsBoolean()
+  completed: boolean
 }

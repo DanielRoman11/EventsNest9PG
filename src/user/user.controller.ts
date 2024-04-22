@@ -19,6 +19,7 @@ import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ListUsers } from './dto/ListUsers';
+import { User } from './entities/user.entity';
 // import { Public } from 'src/auth/auth.guard';
 
 @Controller('user')
@@ -46,7 +47,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Delete(':id')
-  async deleteUser(@Param('id', ParseUUIDPipe) id: string) {
-    return await this.userService.deleteUser(id);
+  async deleteUser(@Param('id', ParseUUIDPipe) userId: Pick<User, 'id'>) {
+    return await this.userService.deleteUser(userId);
   }
 }

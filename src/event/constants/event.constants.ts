@@ -1,4 +1,4 @@
-import { ListEntityQuery } from "../../shared/ListEntityQuery";
+import { ListEntityQuery } from '../../shared/ListEntityQuery';
 
 export class ListEvents extends ListEntityQuery {}
 
@@ -9,5 +9,3 @@ export enum AttendanceResponse {
   Declined,
   Interested,
 }
-
-  
