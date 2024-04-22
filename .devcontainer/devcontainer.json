@@ -20,9 +20,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"tal7aouy.icons",
-				"cweijan.vscode-database-client2",
-				"tinkertrain.theme-panda"
+				"equinusocio.vsc-material-theme-icons",
+				"esbenp.prettier-vscode"
 			]
 		}
 	}

@@ -1,3 +1,3 @@
-import { ListEntityQuery } from "src/helpers/ListEntityQuery";
+import { ListEntityQuery } from "../../shared/ListEntityQuery";
 
 export class ListUsers extends ListEntityQuery {}

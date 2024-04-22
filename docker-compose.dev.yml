@@ -8,9 +8,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: example
-      POSTGRES_USER: daker
-      POSTGRES_DB: eventos
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
 
   events_api:
     image: nestjs-docker
