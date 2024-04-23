@@ -72,6 +72,11 @@ export class EventController {
     return event;
   }
 
+  @Get('attendee')
+  async findAllAttendees() {
+    return await this.eventService.findAllAttendeesOrdered(); 
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
@@ -102,14 +107,9 @@ export class EventController {
     return await this.eventService.deleteEvent(eventId, req.user);
   }
 
-  @Get('attendee')
-  async findAllAttendees(): Promise<Attendee[]> {
-    return await this.eventService.findAllAttendeesOrdered();
-  }
-
+  @Post('attendee')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  @Post('attendee')
   async attendEvent(
     @Request() req: { user: Pick<User, 'id'> },
     @Body() input: CreateAttendeeDto,

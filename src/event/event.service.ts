@@ -39,12 +39,6 @@ export class EventService {
     return this.attendeeRepository.createQueryBuilder('a').orderBy('a.id');
   }
 
-  public async findAllAttendeesOrdered() {
-    const attendees = this.attendeeBaseQuery().getMany();
-    this.logger.debug(attendees);
-    return attendees;
-  }
-
   public async findMyEventsPaginated(
     options: PaginationOptions,
     userId: Pick<User, 'id'>,
@@ -125,6 +119,12 @@ export class EventService {
     if (user.id !== event.user.id) throw new UnauthorizedException();
 
     return await this.eventRepository.delete(event);
+  }
+
+  public async findAllAttendeesOrdered() {
+    const attendees = this.attendeeBaseQuery().getMany();
+    this.logger.debug(attendees);
+    return attendees;
   }
 
   public async createAttendee(
