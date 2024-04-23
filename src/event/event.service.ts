@@ -4,6 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   PaginationOptions,
@@ -11,14 +12,13 @@ import {
   paginate,
 } from '../paginator/paginator';
 import constants from '../shared/constants';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { User } from 'src/user/entities/user.entity';
 import { Event } from './entities/event.entity';
+import { Attendee } from './entities/attendee.entity';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { AuthService } from 'src/auth/auth.service';
-import { Attendee } from './entities/attendee.entity';
-import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/users.service';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export class EventService {
@@ -28,12 +28,21 @@ export class EventService {
     private readonly eventRepository: Repository<Event>,
     @Inject(constants.attendeeRepo)
     private readonly attendeeRepository: Repository<Attendee>,
-    // private readonly authService: AuthService,
     private readonly userService: UserService,
   ) {}
 
   private eventBaseQuery(): SelectQueryBuilder<Event> {
     return this.eventRepository.createQueryBuilder('e').orderBy('e.id');
+  }
+
+  private attendeeBaseQuery(): SelectQueryBuilder<Attendee> {
+    return this.attendeeRepository.createQueryBuilder('a').orderBy('a.id');
+  }
+
+  public async findAllAttendeesOrdered() {
+    const attendees = this.attendeeBaseQuery().getMany();
+    this.logger.debug(attendees);
+    return attendees;
   }
 
   public async findMyEventsPaginated(
@@ -103,12 +112,22 @@ export class EventService {
     eventId: Pick<Event, 'id'>,
     userId: Pick<User, 'id'>,
   ) {
-    const event = await this.eventRepository.findOneBy(eventId);
+    const event = await this.eventBaseQuery()
+      .addSelect('u.id')
+      .leftJoin('e.user', 'u')
+      .where({ id: eventId })
+      .getOne();
     if (!event) throw new NotFoundException('Event Not Found');
-    return this.eventRepository.delete(event);
+
+    const user = await this.userService.findOneUserFromId(userId);
+    if (!user) throw new NotFoundException('User does not exist');
+
+    if (user.id !== event.user.id) throw new UnauthorizedException();
+
+    return await this.eventRepository.delete(event);
   }
 
-  public async attendEvent(
+  public async createAttendee(
     userId: Pick<User, 'id'>,
     eventId: Pick<Event, 'id'>,
     answer: number,
@@ -116,8 +135,26 @@ export class EventService {
     const user = await this.userService.findOneUserFromId(userId);
     if (!user) throw new NotFoundException('User Not Found');
 
-    const event = await this.eventRepository.findOneBy(eventId);
+    const event = await this.eventBaseQuery()
+      .addSelect('u.id')
+      .leftJoin('e.user', 'u')
+      .where(eventId)
+      .getOne();
+
     if (!event) throw new NotFoundException('Event Not Found');
+
+    if (event.user.id === user.id)
+      throw new BadRequestException('Cannot attend your own event');
+
+    const attendee = await this.attendeeBaseQuery()
+      .where({ event: event })
+      .andWhere({ user: user })
+      .getOne();
+
+    if (attendee)
+      throw new BadRequestException(
+        'This user is currently attending this event',
+      );
 
     return await this.attendeeRepository.save({
       user,
