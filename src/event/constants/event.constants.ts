@@ -4,8 +4,7 @@ export class ListEvents extends ListEntityQuery {}
 
 export enum AttendanceResponse {
   Yes = 1,
-  No,
+  Interested,
   Maybe,
   Declined,
-  Interested,
 }
