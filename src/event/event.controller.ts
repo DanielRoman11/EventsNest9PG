@@ -32,23 +32,10 @@ import { CreateAttendeeDto } from './dto/create-attendee.dto';
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 
-  @Get()
-  @UsePipes(new ValidationPipe({ transform: true }))
-  @UseInterceptors(ClassSerializerInterceptor)
-  findAllEvents(
-    @Query() filter: ListEvents,
-  ): Promise<PaginationResults<Event>> {
-    return this.eventService.findEventsPaginated({
-      page: filter.page,
-      limit: filter.limit,
-      total: filter.total,
-    });
-  }
-
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
-  async findAllMyEvents(
+  async getProfile(
     @Query() filter: ListEvents,
     @Request() req: { user: Pick<User, 'id'> },
   ): Promise<PaginationResults<Event>> {
@@ -62,19 +49,31 @@ export class EventController {
     );
   }
 
+  @Get('attendee')
+  async getAttendees(): Promise<any> {
+    return await this.eventService.findAllAttendeesOrdered();
+  }
+
   @Get(':id')
-  async findOneEvent(
+  async getEventById(
     @Param('id', ParseIntPipe) id: Pick<Event, 'id'>,
   ): Promise<Event> {
     const event = await this.eventService.findOneEvent(id);
     if (!event) throw new NotFoundException();
-
     return event;
   }
 
-  @Get('attendee')
-  async findAllAttendees() {
-    return await this.eventService.findAllAttendeesOrdered(); 
+  @Get()
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getAllEvents(
+    @Query() filter: ListEvents,
+  ): Promise<PaginationResults<Event>> {
+    return await this.eventService.findEventsPaginated({
+      page: filter.page,
+      limit: filter.limit,
+      total: filter.total,
+    });
   }
 
   @Post()
