@@ -39,6 +39,10 @@ export class EventService {
     return this.attendeeRepository.createQueryBuilder('a').orderBy('a.id');
   }
 
+  private findEventsFilteredByDated(filter) {
+    const query = this.eventBaseQuery();
+  }
+
   public async findMyEventsPaginated(
     options: PaginationOptions,
     userId: Pick<User, 'id'>,
@@ -122,9 +126,9 @@ export class EventService {
   }
 
   public async findAllAttendeesOrdered() {
-    const attendees = this.attendeeBaseQuery().getMany();
-    this.logger.debug(attendees);
-    return attendees;
+    const attendees = this.attendeeBaseQuery().loadAllRelationIds();
+    this.logger.debug(attendees.getQuery());
+    return await attendees.getMany();
   }
 
   public async createAttendee(

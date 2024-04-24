@@ -8,3 +8,11 @@ export enum AttendanceResponse {
   Maybe,
   Declined,
 }
+
+export enum FilterDateEvent {
+  All = 1,
+  ThisWeek,
+  NextWeek,
+  NextMonth,
+  NextYear,
+}
