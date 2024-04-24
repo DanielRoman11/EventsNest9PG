@@ -1,4 +1,10 @@
-import { Length, IsDateString, IsNotEmpty, IsBoolean } from 'class-validator';
+import {
+  Length,
+  IsDateString,
+  IsNotEmpty,
+  IsBoolean,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateEventDto {
   @Length(4, 20)
@@ -15,5 +21,6 @@ export class CreateEventDto {
   address: string;
 
   @IsBoolean()
-  completed: boolean
+  @IsOptional()
+  completed?: boolean;
 }
