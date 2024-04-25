@@ -69,7 +69,7 @@ export class EventController {
   async getAllEvents(
     @Query() filter: ListEvents,
   ): Promise<PaginationResults<Event>> {
-    return await this.eventService.findEventsPaginated({
+    return await this.eventService.findEventsPaginated(Number(filter.when), {
       page: filter.page,
       limit: filter.limit,
       total: filter.total,

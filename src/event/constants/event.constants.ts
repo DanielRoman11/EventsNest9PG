@@ -1,6 +1,13 @@
 import { ListEntityQuery } from '../../shared/ListEntityQuery';
 
-export class ListEvents extends ListEntityQuery {}
+export class ListEvents extends ListEntityQuery {
+  constructor(partial: Partial<ListEvents> = {}) {
+    super(partial);
+    partial.when = +partial.when || null;
+  }
+
+  when?: FilterDateEvent | null = null;
+}
 
 export enum AttendanceResponse {
   Yes = 1,

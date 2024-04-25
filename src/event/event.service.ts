@@ -40,26 +40,29 @@ export class EventService {
     return this.attendeeRepository.createQueryBuilder('a').orderBy('a.id');
   }
 
-  private findEventsFilteredByDated(filter: FilterDateEvent = 1) {
+  private findEventsFilteredByDated(
+    filter: FilterDateEvent,
+  ): SelectQueryBuilder<Event> {
     const query = this.eventBaseQuery();
     switch (filter) {
+      default:
+        return query;
       case FilterDateEvent.All:
-        query;
-        break;
+        return query;
       case FilterDateEvent.ThisWeek:
-        query.where(
+        return query.where(
           "e.when BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '1 week'",
         );
       case FilterDateEvent.ThisMonth:
-        query.where(
+        return query.where(
           "e.when BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '1 month'",
         );
       case FilterDateEvent.NextMonth:
-        query.where(
+        return query.where(
           "e.when BETWEEN CURRENT_DATE + INTERVAL '1 month' AND CURRENT_DATE + INTERVAL '2 month' - INTERVAL '1 day'",
         );
       case FilterDateEvent.NextYear:
-        query.where("e.when >= CURRENT_DATE + INTERVAL '1 year'");
+        return query.where("e.when >= CURRENT_DATE + INTERVAL '1 year'");
     }
   }
 
@@ -73,9 +76,13 @@ export class EventService {
   }
 
   public async findEventsPaginated(
+    filter: FilterDateEvent,
     options: PaginationOptions,
   ): Promise<PaginationResults<Event>> {
-    const query = this.eventBaseQuery().leftJoinAndSelect('e.user', 'user');
+    const query = this.findEventsFilteredByDated(filter).leftJoinAndSelect(
+      'e.user',
+      'user',
+    );
     this.logger.debug(query.getQuery());
     return paginate(query, options);
   }
