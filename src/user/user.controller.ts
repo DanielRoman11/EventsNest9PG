@@ -1,5 +1,4 @@
 import {
-  Body,
   ClassSerializerInterceptor,
   Controller,
   Delete,
@@ -7,7 +6,6 @@ import {
   HttpCode,
   Param,
   ParseUUIDPipe,
-  Post,
   Query,
   SerializeOptions,
   UseGuards,
@@ -16,22 +14,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ListUsers } from './dto/ListUsers';
 import { User } from './entities/user.entity';
-// import { Public } from 'src/auth/auth.guard';
 
 @Controller('user')
 @SerializeOptions({ strategy: 'exposeAll' })
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @UseInterceptors(ClassSerializerInterceptor)
-  @Post()
-  async signUp(@Body() input: CreateUserDto) {
-    return await this.userService.signUp(input);
-  }
 
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
