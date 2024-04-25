@@ -19,6 +19,7 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { UserService } from 'src/user/users.service';
 import { Repository, SelectQueryBuilder } from 'typeorm';
+import { FilterDateEvent } from './constants/event.constants';
 
 @Injectable()
 export class EventService {
@@ -39,8 +40,27 @@ export class EventService {
     return this.attendeeRepository.createQueryBuilder('a').orderBy('a.id');
   }
 
-  private findEventsFilteredByDated(filter) {
+  private findEventsFilteredByDated(filter: FilterDateEvent = 1) {
     const query = this.eventBaseQuery();
+    switch (filter) {
+      case FilterDateEvent.All:
+        query;
+        break;
+      case FilterDateEvent.ThisWeek:
+        query.where(
+          "e.when BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '1 week'",
+        );
+      case FilterDateEvent.ThisMonth:
+        query.where(
+          "e.when BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '1 month'",
+        );
+      case FilterDateEvent.NextMonth:
+        query.where(
+          "e.when BETWEEN CURRENT_DATE + INTERVAL '1 month' AND CURRENT_DATE + INTERVAL '2 month' - INTERVAL '1 day'",
+        );
+      case FilterDateEvent.NextYear:
+        query.where("e.when >= CURRENT_DATE + INTERVAL '1 year'");
+    }
   }
 
   public async findMyEventsPaginated(
@@ -71,7 +91,6 @@ export class EventService {
     userId: Pick<User, 'id'>,
   ): Promise<Event> {
     const user = await this.userService.findOneUserFromId(userId);
-    console.log('Usuario', user);
     if (user)
       return this.eventRepository.save({
         ...event,

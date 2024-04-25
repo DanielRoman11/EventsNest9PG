@@ -12,7 +12,7 @@ export enum AttendanceResponse {
 export enum FilterDateEvent {
   All = 1,
   ThisWeek,
-  NextWeek,
+  ThisMonth,
   NextMonth,
   NextYear,
 }
