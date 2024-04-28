@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_DB: ${DB_NAME}
-
+      
   events_api:
     image: nestjs-docker
     container_name: events_api
