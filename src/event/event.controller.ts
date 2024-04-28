@@ -27,12 +27,15 @@ import { ListEvents } from './constants/event.constants';
 import { Attendee } from './entities/attendee.entity';
 import { User } from '../user/entities/user.entity';
 import { CreateAttendeeDto } from './dto/create-attendee.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Events')
 @Controller('event')
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 
   @Get('profile')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
   async getProfile(
@@ -49,7 +52,7 @@ export class EventController {
     );
   }
 
-  @Get('attendee')
+  @Get('attendees')
   async getAttendees(): Promise<any> {
     return await this.eventService.findAllAttendeesOrdered();
   }
@@ -77,6 +80,7 @@ export class EventController {
   }
 
   @Post()
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   async createEvent(
@@ -87,6 +91,7 @@ export class EventController {
   }
 
   @Patch(':eventId')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async updateEvent(
     @Param('eventId', ParseIntPipe) eventId: Pick<Event, 'id'>,
@@ -97,6 +102,7 @@ export class EventController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async deleteEvent(
@@ -107,6 +113,7 @@ export class EventController {
   }
 
   @Post('attendee')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   async attendEvent(

@@ -17,7 +17,9 @@ import { UserService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ListUsers } from './dto/ListUsers';
 import { User } from './entities/user.entity';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller('user')
 @SerializeOptions({ strategy: 'exposeAll' })
 export class UserController {
@@ -34,9 +36,10 @@ export class UserController {
     });
   }
 
+  @Delete(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
-  @Delete(':id')
   async deleteUser(@Param('id', ParseUUIDPipe) userId: Pick<User, 'id'>) {
     return await this.userService.deleteUser(userId);
   }
