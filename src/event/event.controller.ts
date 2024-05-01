@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
@@ -79,44 +78,44 @@ export class EventController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  async createEvent(
+  createEvent(
     @Body() input: CreateEventDto,
     @Request() req: { user: Pick<User, 'id'> },
   ): Promise<Event> {
-    return await this.eventService.createEvent(input, req.user);
+    return this.eventService.createEvent(input, req.user);
   }
 
   @Patch(':eventId')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  async updateEvent(
+  updateEvent(
     @Param('eventId', ParseIntPipe) eventId: Pick<Event, 'id'>,
     @Body() input: UpdateEventDto,
     @Request() req: { user: Pick<User, 'id'> },
   ): Promise<Event> {
-    return await this.eventService.updateEvent(eventId, req.user, input);
+    return this.eventService.updateEvent(eventId, req.user, input);
   }
 
   @Delete(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
-  async deleteEvent(
+  deleteEvent(
     @Param('id', ParseIntPipe) eventId: Pick<Event, 'id'>,
     @Request() req: { user: Pick<User, 'id'> },
   ) {
-    return await this.eventService.deleteEvent(eventId, req.user);
+    return this.eventService.deleteEvent(eventId, req.user);
   }
 
   @Post('attendee')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  async attendEvent(
+  attendEvent(
     @Request() req: { user: Pick<User, 'id'> },
     @Body() input: CreateAttendeeDto,
   ): Promise<Attendee> {
-    return await this.eventService.createAttendee(
+    return this.eventService.createAttendee(
       req.user,
       input.eventId,
       input.answer,

@@ -90,7 +90,9 @@ export class EventService {
   public async findOneEvent(id: Pick<Event, 'id'>): Promise<Event> {
     const query = this.eventBaseQuery()
       .where({ id })
-      .loadRelationCountAndMap('e.attendeeCount', 'a.attendees');
+      .loadRelationCountAndMap('e.attendeeCount', 'e.attendees')
+      .leftJoinAndSelect('e.attendees', 'a');
+
     this.logger.debug(query.getQuery());
     return await query.getOneOrFail();
   }
