@@ -6,6 +6,7 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  Relation,
 } from 'typeorm';
 import { Attendee } from './attendee.entity';
 
@@ -35,5 +36,7 @@ export class Event {
 
   @OneToMany(() => Attendee, (attendee) => attendee.event)
   @JoinColumn()
-  attendees: Attendee[];
+  attendees: Relation<Attendee[]>;
+
+  attendeeCount?: number;
 }

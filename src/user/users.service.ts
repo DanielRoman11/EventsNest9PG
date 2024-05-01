@@ -6,7 +6,12 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { DeleteResult, Repository, SelectQueryBuilder } from 'typeorm';
+import {
+  DeleteResult,
+  Relation,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from 'src/auth/auth.service';
@@ -21,7 +26,7 @@ export class UserService {
     @Inject(constants.userRepo)
     private readonly userRepo: Repository<User>,
     @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService,
+    private readonly authService: Relation<AuthService>,
   ) {}
 
   private userBaseQuery(): SelectQueryBuilder<User> {
@@ -54,7 +59,10 @@ export class UserService {
   }
 
   public async findOneUserFromId(userId: Pick<User, 'id'>) {
-    return await this.userRepo.createQueryBuilder('u').where({ id: userId }).getOne();
+    return await this.userRepo
+      .createQueryBuilder('u')
+      .where({ id: userId })
+      .getOne();
   }
 
   public async findAllUsersPaginated(options: PaginationOptions) {

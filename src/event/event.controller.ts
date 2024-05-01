@@ -38,11 +38,11 @@ export class EventController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
-  async getProfile(
+  getMyEvents(
     @Query() filter: ListEvents,
     @Request() req: { user: Pick<User, 'id'> },
   ): Promise<PaginationResults<Event>> {
-    return await this.eventService.findMyEventsPaginated(
+    return this.eventService.findMyEventsPaginated(
       {
         page: filter.page,
         limit: filter.limit,
@@ -53,17 +53,15 @@ export class EventController {
   }
 
   @Get('attendees')
-  async getAttendees(): Promise<any> {
-    return await this.eventService.findAllAttendeesOrdered();
+  getAttendees(): Promise<any> {
+    return this.eventService.findAllAttendeesOrdered();
   }
 
   @Get(':id')
-  async getEventById(
+  getEventById(
     @Param('id', ParseIntPipe) id: Pick<Event, 'id'>,
   ): Promise<Event> {
-    const event = await this.eventService.findOneEvent(id);
-    if (!event) throw new NotFoundException();
-    return event;
+    return this.eventService.findOneEvent(id);
   }
 
   @Get()

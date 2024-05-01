@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   events_db:
@@ -6,20 +6,20 @@ services:
     container_name: events_db
     restart: always
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_DB: ${DB_NAME}
-      
+
   events_api:
     image: nestjs-docker
     container_name: events_api
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.dev
     ports:
-      - "3001:3001"
+      - '3001:3001'
     env_file:
       - .env
     volumes:

@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 import { Event } from '../../event/entities/event.entity';
 import {
   Column,
@@ -6,6 +6,7 @@ import {
   JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import { Attendee } from '../../event/entities/attendee.entity';
 
@@ -36,8 +37,7 @@ export class User {
 
   @OneToMany(() => Attendee, (attendee) => attendee.user)
   @JoinColumn()
-  attendees: Attendee[]
-
+  attendees: Relation<Attendee[]>;
 
   eventCount?: number;
 }

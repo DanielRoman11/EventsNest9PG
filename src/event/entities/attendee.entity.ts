@@ -1,5 +1,11 @@
 import { User } from '../../user/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 import { Event } from './event.entity';
 import { AttendanceResponse } from '../constants/event.constants';
 
@@ -9,10 +15,10 @@ export class Attendee {
   id: number;
 
   @ManyToOne(() => User, (user) => user.attendees)
-  user: User;
+  user: Relation<User>;
 
   @ManyToOne(() => Event, (event) => event.attendees)
-  event: Event;
+  event: Relation<Event>;
 
   @Column({
     type: 'enum',

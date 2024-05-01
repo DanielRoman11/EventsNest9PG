@@ -9,13 +9,13 @@ import { UserService } from '../user/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../../src/user/entities/user.entity';
-
+import { Relation } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(forwardRef(() => UserService))
-    private usersService: UserService,
+    private usersService: Relation<UserService>,
     private jwtService: JwtService,
   ) {}
 

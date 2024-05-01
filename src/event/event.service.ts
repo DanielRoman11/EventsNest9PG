@@ -66,7 +66,7 @@ export class EventService {
     }
   }
 
-  public async findMyEventsPaginated(
+  public findMyEventsPaginated(
     options: PaginationOptions,
     userId: Pick<User, 'id'>,
   ): Promise<PaginationResults<Event>> {
@@ -75,7 +75,7 @@ export class EventService {
     return paginate(query, options);
   }
 
-  public async findEventsPaginated(
+  public findEventsPaginated(
     filter: FilterDateEvent,
     options: PaginationOptions,
   ): Promise<PaginationResults<Event>> {
@@ -87,10 +87,12 @@ export class EventService {
     return paginate(query, options);
   }
 
-  public findOneEvent(id: Pick<Event, 'id'>): Promise<Event> {
-    const query = this.eventBaseQuery().where({ id });
+  public async findOneEvent(id: Pick<Event, 'id'>): Promise<Event> {
+    const query = this.eventBaseQuery()
+      .where({ id })
+      .loadRelationCountAndMap('e.attendeeCount', 'a.attendees');
     this.logger.debug(query.getQuery());
-    return query.getOne();
+    return await query.getOneOrFail();
   }
 
   public async createEvent(
@@ -99,7 +101,7 @@ export class EventService {
   ): Promise<Event> {
     const user = await this.userService.findOneUserFromId(userId);
     if (user)
-      return this.eventRepository.save({
+      return await this.eventRepository.save({
         ...event,
         when: new Date(event.when),
         user: user,
