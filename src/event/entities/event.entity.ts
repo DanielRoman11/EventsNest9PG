@@ -30,7 +30,10 @@ export class Event {
   @Column({ default: false })
   completed: boolean;
 
-  @ManyToOne(() => User, (user) => user.events)
+  @ManyToOne(() => User, (user) => user.events, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   @JoinColumn()
   user: User;
 

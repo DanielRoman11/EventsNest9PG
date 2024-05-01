@@ -13,7 +13,7 @@ import constants from '../shared/constants';
     PassportModule,
     JwtModule.register({
       global: true,
-      secret: constants.jwtSecret,
+      secret: constants.jwtSecret.toString(),
       signOptions: { expiresIn: '2d' },
     }),
   ],

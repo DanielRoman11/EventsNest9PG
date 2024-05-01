@@ -79,10 +79,10 @@ export class EventService {
     filter: FilterDateEvent,
     options: PaginationOptions,
   ): Promise<PaginationResults<Event>> {
-    const query = this.findEventsFilteredByDated(filter).leftJoinAndSelect(
-      'e.user',
-      'user',
-    );
+    const query = this.findEventsFilteredByDated(filter)
+      .leftJoinAndSelect('e.user', 'u')
+      .loadRelationCountAndMap('e.attendeesCount', 'e.attendees');
+
     this.logger.debug(query.getQuery());
     return paginate(query, options);
   }

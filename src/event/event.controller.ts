@@ -67,10 +67,8 @@ export class EventController {
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
   @UseInterceptors(ClassSerializerInterceptor)
-  async getAllEvents(
-    @Query() filter: ListEvents,
-  ): Promise<PaginationResults<Event>> {
-    return await this.eventService.findEventsPaginated(Number(filter.when), {
+  getAllEvents(@Query() filter: ListEvents): Promise<PaginationResults<Event>> {
+    return this.eventService.findEventsPaginated(Number(filter.when), {
       page: filter.page,
       limit: filter.limit,
       total: filter.total,

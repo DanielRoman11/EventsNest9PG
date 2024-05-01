@@ -30,7 +30,9 @@ export class User {
   password: string;
 
   @OneToMany(() => Event, (event) => event.user, {
-    cascade: true,
+    // eager: true,
+    // lazy: true,
+    // cascade: true,
   })
   @JoinColumn()
   events: Event[];
