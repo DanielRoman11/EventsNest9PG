@@ -20,6 +20,8 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { UserService } from 'src/user/users.service';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { FilterDateEvent } from './constants/event.constants';
+import { Cron, SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 
 @Injectable()
 export class EventService {
@@ -30,6 +32,7 @@ export class EventService {
     @Inject(constants.attendeeRepo)
     private readonly attendeeRepository: Repository<Attendee>,
     private readonly userService: UserService,
+    private readonly scheduler: SchedulerRegistry,
   ) {}
 
   private eventBaseQuery(): SelectQueryBuilder<Event> {
@@ -38,6 +41,19 @@ export class EventService {
 
   private attendeeBaseQuery(): SelectQueryBuilder<Attendee> {
     return this.attendeeRepository.createQueryBuilder('a').orderBy('a.id');
+  }
+
+  private async addEventCompletedFlag(name: string, event: Event) {
+    const job = new CronJob(
+      `* 10 ${event.when.getDay() + 1} ${event.when.getMonth().toString()} *`,
+      () => {
+        this.logger.warn(`Marking event "${name}" as completed!`);
+        this.eventRepository.save({ ...event, completed: true });
+      },
+    );
+
+    this.scheduler.addCronJob(name, job);
+    job.start();
   }
 
   private findEventsFilteredByDated(

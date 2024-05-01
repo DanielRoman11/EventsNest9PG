@@ -16,6 +16,9 @@ export class CreateEventDto {
   @IsDateString()
   when: Date;
 
+  @IsDateString()
+  finish: Date;
+
   @IsNotEmpty()
   @Length(4, 30)
   address: string;

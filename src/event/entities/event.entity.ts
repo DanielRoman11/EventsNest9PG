@@ -25,6 +25,9 @@ export class Event {
   when: Date;
 
   @Column()
+  finish: Date;
+
+  @Column()
   address: string;
 
   @Column({ default: false })
