@@ -5,7 +5,7 @@ const constants = {
   eventRepo: 'EVENTS_REPOSITORY',
   userRepo: 'USER_REPOSITORY',
   attendeeRepo: 'USER_REPOSITORY',
-  jwtSecret: (c: ConfigService) => c.get('JWTSECRET'),
+  jwtSecret: process.env.JWTSECRET,
   AuthGuard: 'APP_GUARD',
   IS_PUBLIC_KEY: 'isPublic',
 };
