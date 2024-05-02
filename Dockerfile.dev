@@ -1,15 +1,15 @@
-FROM node:20-bullseye AS dev
+FROM node:20-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
+COPY . /app
+WORKDIR /app
 
-WORKDIR /usr/src/app
-COPY . .
-
-RUN npm init -y
+FROM base AS prod-deps
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-EXPOSE 3001
+RUN pnpm config set store-dir /pnpm-store
+RUN apk add git
 
-CMD ["pnpm", "start:dev"]
-
+EXPOSE 3000 
+CMD [ "pnpm", "start:dev" ]
