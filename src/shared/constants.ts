@@ -1,5 +1,3 @@
-import { ConfigService } from '@nestjs/config';
-
 const constants = {
   dataSource: 'DATA_SOURCE',
   eventRepo: 'EVENTS_REPOSITORY',
