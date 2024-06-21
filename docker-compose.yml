@@ -4,19 +4,8 @@ services:
   events_api:
     image: nestjs-docker
     container_name: events_api
-    build: 
+    build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    environment:
-      - PORT=3000
-      - JWT_SECRET=ThisIsMySecret
-      - NODE_ENV=dev
-      - DB_HOST=mysql_db
-      - DB_PORT=3307
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - DB_NAME=${DB_NAME}
-    volumes:
-      - ./src:/usr/src/app/src
